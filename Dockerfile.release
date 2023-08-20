@@ -1,0 +1,5 @@
+FROM cgr.dev/chainguard/static:latest
+
+COPY adapter /usr/local/bin/adapter
+ENV PATH="$PATH:/usr/local/bin"
+ENTRYPOINT ["adapter"]
