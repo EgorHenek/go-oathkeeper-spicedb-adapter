@@ -1,0 +1,62 @@
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - main: ./cmd/adapter
+    env:
+      - CGO_ENABLED=0
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    ldflags:
+      - "-s -w -X main.version={{ .Version }} -X main.commit={{ .Commit }}"
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+checksum:
+  name_template: 'checksums.txt'
+changelog:
+  use: "github-native"
+  sort: "asc"
+dockers:
+  - image_templates:
+      - &amd_image_gh "ghcr.io/EgorHenek/go-oathkeeper-spicedb-adapter:v{{ .Version }}-amd64"
+    use: buildx
+    dockerfile: Dockerfile.release
+    build_flag_templates:
+      - "--platform=linux/amd64"
+  - image_templates:
+      - &arm_image_gh "ghcr.io/EgorHenek/go-oathkeeper-spicedb-adapter:v{{ .Version }}-arm64"
+    use: buildx
+    goarch: arm64
+    dockerfile: Dockerfile.release
+    build_flag_templates:
+      - "--platform=linux/arm64"
+docker_manifests:
+  - name_template: "ghcr.io/EgorHenek/go-oathkeeper-spicedb-adapter:latest"
+    image_templates:
+      - *amd_image_gh
+      - *arm_image_gh
+  - name_template: "ghcr.io/EgorHenek/go-oathkeeper-spicedb-adapter:v{{ .Version }}"
+    image_templates:
+      - *amd_image_gh
+      - *arm_image_gh
+release:
+  mode: "replace"
+  draft: false
+  prerelease: auto
+  footer: |
+    ## Docker Images
+    This release is available at `ghcr.io/EgorHenek/go-oathkeeper-spicedb-adapter:v{{ .Version }}`
+
+
+# The lines beneath this are called `modelines`. See `:help modeline`
+# Feel free to remove those if you don't want/use them.
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
