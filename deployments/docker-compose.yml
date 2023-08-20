@@ -1,0 +1,22 @@
+services:
+  spicedb:
+    image: authzed/spicedb:v1.24.0
+    ports:
+      - 50051:50051
+    command: ["serve"]
+    environment:
+      - SPICEDB_GRPC_PRESHARED_KEY=topsecret
+  spicedb-upload-schema:
+    image: authzed/zed:v0.12.1
+    depends_on:
+      - spicedb
+    command: ["schema", "write", "/home/authzed/schema.zed", "--endpoint", "spicedb:50051", "--token", "topsecret", "--insecure"]
+    volumes:
+      - ./schema.zed:/home/authzed/schema.zed
+  adapter:
+    build: ../
+    ports:
+      - 50150:50150
+    environment:
+      - SPICE_DB_URL=http://spicedb:50051
+      - SPICE_DB_SECRET=topsecret

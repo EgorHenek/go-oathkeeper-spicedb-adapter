@@ -1,0 +1,20 @@
+schema: >-
+  definition user {}
+
+  definition beer {
+    relation drinker: user | user:*
+
+    permission drink = drinker
+  }
+
+relationships: >-
+  beer:1#drinker@user:1
+
+  beer:2#drinker@user:*
+
+assertions:
+  assertTrue:
+    - "beer:1#drink@user:1"
+    - "beer:2#drink@user:2"
+  assertFalse:
+    - "beer:1#drink@user:2"

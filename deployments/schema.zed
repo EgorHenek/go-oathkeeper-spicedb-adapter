@@ -1,0 +1,10 @@
+/** user represents a user */
+definition user {}
+
+/** beer represents a document with access control */
+definition beer {
+  /** reader indicates that the user is a reader on the beer */
+  relation drinker: user | user:*
+
+  permission drink = drinker
+}

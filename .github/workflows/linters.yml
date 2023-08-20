@@ -1,4 +1,4 @@
-name: golangci-lint
+name: linters
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   golangci:
-    name: lint
+    name: GolangCI
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -22,3 +22,11 @@ jobs:
       - uses: golangci/golangci-lint-action@v3
         with:
           version: v1.54
+  spicedb:
+    name: SpiceDB schema linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: authzed/action-spicedb-validate@v1
+        with:
+          validationfile: "deployments/schema.yaml"

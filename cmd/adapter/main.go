@@ -12,8 +12,15 @@ import (
 	"time"
 
 	"github.com/EgorHenek/go-oathkeeper-spicedb-adapter/configs"
+	"github.com/EgorHenek/go-oathkeeper-spicedb-adapter/internal/domain"
+	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	"github.com/authzed/authzed-go/v1"
+	"github.com/authzed/grpcutil"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/render"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
@@ -23,9 +30,19 @@ const (
 
 func main() {
 	config := configs.NewConfig()
+
+	sdbClient, err := authzed.NewClient(
+		config.SpiceDBURL,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpcutil.WithInsecureBearerToken(config.SpiceDBSecret),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	server := &http.Server{
 		Addr:              fmt.Sprintf(":%d", config.Port),
-		Handler:           run(),
+		Handler:           run(sdbClient),
 		ReadHeaderTimeout: ReadHeaderTimeout,
 	}
 
@@ -46,33 +63,53 @@ func main() {
 			}
 		}()
 
-		err := server.Shutdown(shutdownCtx)
+		err = server.Shutdown(shutdownCtx)
 		if err != nil {
 			log.Fatal(err)
 		}
 		serverStopCtx()
 	}()
 
-	err := server.ListenAndServe()
-	if err != nil && err != http.ErrServerClosed {
+	err = server.ListenAndServe()
+	if err != nil && errors.Is(err, http.ErrServerClosed) {
 		log.Fatal(err)
 	}
 
 	<-serverCtx.Done()
 }
 
-func run() http.Handler {
+func run(client *authzed.Client) http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Heartbeat("/health"))
 	r.Use(middleware.Recoverer)
 
-	r.Get("/hello", func(w http.ResponseWriter, r *http.Request) {
-		_, err := w.Write([]byte("Hello World!"))
-		if err != nil {
-			log.Fatal(err)
-		}
-	})
+	r.Post("/permissions/check", PermissionsCheckHandler(client))
 
 	return r
+}
+
+func PermissionsCheckHandler(client *authzed.Client) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data := &domain.CheckPermissionRequest{}
+		err := render.Bind(r, data)
+		if err != nil {
+			_ = render.Render(w, r, domain.ErrInvalidRequest(err))
+			return
+		}
+
+		resp, err := client.CheckPermission(context.Background(), &v1.CheckPermissionRequest{
+			Consistency: data.Consistency,
+			Subject:     data.Subject,
+			Resource:    data.Resource,
+			Permission:  data.Permission,
+		})
+		if err != nil {
+			_ = render.Render(w, r, domain.ErrInvalidRequest(err))
+			return
+		}
+
+		allowed := resp.Permissionship == v1.CheckPermissionResponse_PERMISSIONSHIP_HAS_PERMISSION
+		_ = render.Render(w, r, domain.NewCheckPermissionResponse(allowed))
+	}
 }

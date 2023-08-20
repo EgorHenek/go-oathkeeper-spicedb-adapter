@@ -2,7 +2,8 @@ before:
   hooks:
     - go mod tidy
 builds:
-  - main: ./cmd/adapter
+  - binary: adapter
+    main: ./cmd/adapter
     env:
       - CGO_ENABLED=0
     mod_timestamp: "{{ .CommitTimestamp }}"
@@ -26,24 +27,24 @@ changelog:
   sort: "asc"
 dockers:
   - image_templates:
-      - &amd_image_gh "ghcr.io/EgorHenek/go-oathkeeper-spicedb-adapter:v{{ .Version }}-amd64"
+      - &amd_image_gh "ghcr.io/egorhenek/go-oathkeeper-spicedb-adapter:v{{ .Version }}-amd64"
     use: buildx
     dockerfile: Dockerfile.release
     build_flag_templates:
       - "--platform=linux/amd64"
   - image_templates:
-      - &arm_image_gh "ghcr.io/EgorHenek/go-oathkeeper-spicedb-adapter:v{{ .Version }}-arm64"
+      - &arm_image_gh "ghcr.io/egorhenek/go-oathkeeper-spicedb-adapter:v{{ .Version }}-arm64"
     use: buildx
     goarch: arm64
     dockerfile: Dockerfile.release
     build_flag_templates:
       - "--platform=linux/arm64"
 docker_manifests:
-  - name_template: "ghcr.io/EgorHenek/go-oathkeeper-spicedb-adapter:latest"
+  - name_template: "ghcr.io/egorhenek/go-oathkeeper-spicedb-adapter:latest"
     image_templates:
       - *amd_image_gh
       - *arm_image_gh
-  - name_template: "ghcr.io/EgorHenek/go-oathkeeper-spicedb-adapter:v{{ .Version }}"
+  - name_template: "ghcr.io/egorhenek/go-oathkeeper-spicedb-adapter:v{{ .Version }}"
     image_templates:
       - *amd_image_gh
       - *arm_image_gh
@@ -53,7 +54,7 @@ release:
   prerelease: auto
   footer: |
     ## Docker Images
-    This release is available at `ghcr.io/EgorHenek/go-oathkeeper-spicedb-adapter:v{{ .Version }}`
+    This release is available at `ghcr.io/egorhenek/go-oathkeeper-spicedb-adapter:v{{ .Version }}`
 
 
 # The lines beneath this are called `modelines`. See `:help modeline`

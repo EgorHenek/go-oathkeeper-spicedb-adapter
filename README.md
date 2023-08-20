@@ -10,8 +10,8 @@ TODO
 
 ### Environment Variables
 
-| Name            | Default | Description                                                |
-| --------------- | ------- | ---------------------------------------------------------- |
-| PORT            | 50150   | Port to listen on                                          |
-| SPICE_DB_SECRET |         | **(required)** GRPC preshared key for the SpiceDB instance |
-| SPICE_DB_URL    |         | **(required)** URL to the SpiceDB instance                 |
+| Name            | Default | Description                                                           |
+| --------------- | ------- | --------------------------------------------------------------------- |
+| PORT            | 50150   | Port to listen on                                                     |
+| SPICE_DB_SECRET |         | **(required)** GRPC preshared key for the SpiceDB instance            |
+| SPICE_DB_URL    |         | **(required)** URL to the SpiceDB instance. *Example: localhost:50051 |
