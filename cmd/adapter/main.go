@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/EgorHenek/go-oathkeeper-spicedb-adapter/configs"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -20,8 +22,9 @@ const (
 )
 
 func main() {
+	config := configs.NewConfig()
 	server := &http.Server{
-		Addr:              ":4500",
+		Addr:              fmt.Sprintf(":%d", config.Port),
 		Handler:           run(),
 		ReadHeaderTimeout: ReadHeaderTimeout,
 	}
