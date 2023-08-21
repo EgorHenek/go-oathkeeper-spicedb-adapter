@@ -13,10 +13,21 @@ services:
     command: ["schema", "write", "/home/authzed/schema.zed", "--endpoint", "spicedb:50051", "--token", "topsecret", "--insecure"]
     volumes:
       - ./schema.zed:/home/authzed/schema.zed
+  oathkeeper:
+    image: oryd/oathkeeper:v0.40.6
+    ports:
+      - "8080:4455"
+      - "4456:4456"
+    command: ["serve", "--config", "/etc/config/oathkeeper/config.yml"]
+    volumes:
+      - ./oathkeeper/config.yml:/etc/config/oathkeeper/config.yml
+      - ./oathkeeper/whoami.json:/etc/config/oathkeeper/access_rules/whoami.json
+  whoami:
+    image: traefik/whoami:latest
   adapter:
     build: ../
     ports:
       - 50150:50150
     environment:
-      - SPICE_DB_URL=http://spicedb:50051
+      - SPICE_DB_URL=spicedb:50051
       - SPICE_DB_SECRET=topsecret

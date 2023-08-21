@@ -1,0 +1,26 @@
+[
+  {
+    "id": "whoami",
+    "version": "v0.40.6",
+    "upstream": {
+      "url": "http://whoami"
+    },
+    "match": {
+      "url": "http://127.0.0.1:8080/whoami/<.*>",
+      "methods": ["GET"]
+    },
+    "authenticators": [
+      {
+        "handler": "anonymous"
+      }
+    ],
+    "authorizer": {
+      "handler": "remote_json"
+    },
+    "mutators": [
+      {
+        "handler": "header"
+      }
+    ]
+  }
+]

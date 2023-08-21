@@ -1,0 +1,32 @@
+authenticators:
+  anonymous:
+    enabled: true
+    config:
+      subject: anonymous
+
+authorizers:
+  remote_json:
+    enabled: true
+
+    config:
+      remote: http://adapter:50150/permissions/check
+      payload: |
+        {
+          "resource": {"object_type": "beer", "object_id": "{{ printIndex .MatchContext.RegexpCaptureGroups 0 }}"},
+          "permission": "drink",
+          "subject": {"object": {"object_type": "user", "object_id": "{{ print .Subject }}"}}
+        }
+
+mutators:
+  noop:
+    enabled: true
+  header:
+    enabled: true
+    config:
+      headers:
+        X-User: "{{ print .Subject }}"
+
+access_rules:
+  matching_strategy: regexp
+  repositories:
+    - file:///etc/config/oathkeeper/access_rules/whoami.json

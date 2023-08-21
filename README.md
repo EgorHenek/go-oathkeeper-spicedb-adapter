@@ -51,7 +51,11 @@ Date: Mon, 21 Aug 2023 06:24:31 GMT
 Content-Length: 18
 ```
 
-## Environment Variables
+## Configuration
+
+An example of integrating the adapter into oathkeeper for the whoami service can be seen in the [deployments](go-oathkeeper-spicedb-adapter/tree/master/deployments).
+
+### Environment Variables
 
 | Name            | Default | Description                                                           |
 | --------------- | ------- | --------------------------------------------------------------------- |
