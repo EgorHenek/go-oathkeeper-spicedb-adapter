@@ -67,6 +67,8 @@ release:
   footer: |
     ## Docker Images
     This release is available at `ghcr.io/egorhenek/go-oathkeeper-spicedb-adapter:v{{ .Version }}`
+archives:
+  - format: binary
 
 
 # The lines beneath this are called `modelines`. See `:help modeline`
