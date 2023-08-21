@@ -6,12 +6,55 @@ Oathkeeper [relies](https://www.ory.sh/docs/oathkeeper/pipeline/authz#remote_jso
 
 ## Getting Started
 
-TODO
+### Installation
 
-### Environment Variables
+#### Binaries
+
+Go to the [release page](https://github.com/EgorHenek/go-oathkeeper-spicedb-adapter/releases) and download the binary for your platform.
+
+For example, on Linux:
+
+```bash
+curl -L https://github.com/EgorHenek/go-oathkeeper-spicedb-adapter/releases/download/v1.0.1/adapter_1.0.1_linux_amd64 -o go-oathkeeper-spicedb-adapter
+chmod +x go-oathkeeper-spicedb-adapter
+```
+
+and run:
+
+```bash
+./go-oathkeeper-spicedb-adapter
+```
+
+#### Docker
+
+```bash
+docker pull henek/go-oathkeeper-spicedb-adapter:latest
+docker run -p 50150:50150 --name osadapter -e SPICE_DB_URL=http://spicedb:50051 -e SPICE_DB_SECRET=topsecret henek/go-oathkeeper-spicedb-adapter
+```
+
+**Note:** Don't use the `latest` tag in a production environment.
+
+### Docker Compose
+
+You can see an example environment deployment in the /deployments directory.
+
+## Usage examples
+
+```bash
+curl -i -X POST --json '{"resource": {"object_type": "beer", "object_id": "1"}, "permission": "drink", "subject": {"object": {"object_type": "user", "object_id": "1"}}}' http://localhost:50150/permissions/check
+```
+
+```bash
+HTTP/1.1 403 Forbidden
+Content-Type: application/json
+Date: Mon, 21 Aug 2023 06:24:31 GMT
+Content-Length: 18
+```
+
+## Environment Variables
 
 | Name            | Default | Description                                                           |
 | --------------- | ------- | --------------------------------------------------------------------- |
 | PORT            | 50150   | Port to listen on                                                     |
 | SPICE_DB_SECRET |         | **(required)** GRPC preshared key for the SpiceDB instance            |
-| SPICE_DB_URL    |         | **(required)** URL to the SpiceDB instance. *Example: localhost:50051 |
+| SPICE_DB_URL    |         | **(required)** URL to the SpiceDB instance. *Example*: localhost:50051 |
