@@ -30,11 +30,25 @@ const (
 
 func main() {
 	config := configs.NewConfig()
+	var certs grpc.DialOption
+	var token grpc.DialOption
+	var err error
+
+	if config.TLSCertPath == "" {
+		certs = grpc.WithTransportCredentials(insecure.NewCredentials())
+		token = grpcutil.WithInsecureBearerToken(config.SpiceDBSecret)
+	} else {
+		certs, err = grpcutil.WithCustomCerts(grpcutil.VerifyCA, config.TLSCertPath)
+		if err != nil {
+			log.Fatal(err)
+		}
+		token = grpcutil.WithBearerToken(config.SpiceDBSecret)
+	}
 
 	sdbClient, err := authzed.NewClient(
 		config.SpiceDBURL,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpcutil.WithInsecureBearerToken(config.SpiceDBSecret),
+		certs,
+		token,
 	)
 	if err != nil {
 		log.Fatal(err)
