@@ -34,11 +34,11 @@ func main() {
 	var token grpc.DialOption
 	var err error
 
-	if config.TLSCertPath == "" {
+	if len(config.TLSCertPath) == 0 {
 		certs = grpc.WithTransportCredentials(insecure.NewCredentials())
 		token = grpcutil.WithInsecureBearerToken(config.SpiceDBSecret)
 	} else {
-		certs, err = grpcutil.WithCustomCerts(grpcutil.VerifyCA, config.TLSCertPath)
+		certs, err = grpcutil.WithCustomCerts(grpcutil.VerifyCA, config.TLSCertPath...)
 		if err != nil {
 			log.Fatal(err)
 		}

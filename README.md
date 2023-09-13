@@ -62,4 +62,4 @@ An example of integrating the adapter into oathkeeper for the whoami service can
 | PORT            | 50150   | Port to listen on                                                                                             |
 | SPICE_DB_SECRET |         | **(required)** GRPC preshared key for the SpiceDB instance                                                    |
 | SPICE_DB_URL    |         | **(required)** URL to the SpiceDB instance. *Example*: localhost:50051                                        |
-| TLS_CERT_PATH   | empty   | **(optional)** Path to a TLS certificate file. If this value is empty, an unencrypted connection will be used |
+| TLS_CERT_PATH   | empty   | **(optional)** Path to a TLS certificate files. If this value is empty, an unencrypted connection will be used. *Example*: /mnt/tls/ca.crt,/mnt/tls/tls.crt |
