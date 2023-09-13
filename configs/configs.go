@@ -7,10 +7,10 @@ import (
 )
 
 type Config struct {
-	Port          int    `default:"50150"`
-	SpiceDBURL    string `required:"true" envconfig:"SPICE_DB_URL"`
-	SpiceDBSecret string `required:"true" envconfig:"SPICE_DB_SECRET"`
-	TLSCertPath   string `envconfig:"TLS_CERT_PATH"`
+	Port          int      `default:"50150"`
+	SpiceDBURL    string   `required:"true" envconfig:"SPICE_DB_URL"`
+	SpiceDBSecret string   `required:"true" envconfig:"SPICE_DB_SECRET"`
+	TLSCertPath   []string `envconfig:"TLS_CERT_PATH"`
 }
 
 func NewConfig() Config {
